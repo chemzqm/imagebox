@@ -1,4 +1,3 @@
-'use strict'
 import events from 'events'
 import event from 'event'
 import classes from 'classes'
@@ -38,12 +37,16 @@ class ImageBox {
     }
     this._onclick = this.onclick.bind(this)
     this._overlayClick = this.overlayClick.bind(this)
-    event.bind(document.body, 'click', this._onclick)
+    this._onkeyup = this.onkeyup.bind(this)
+    event.bind(document, 'click', this._onclick)
+    event.bind(document, 'keyup', this._onkeyup)
     event.bind(overlay, 'click', this._overlayClick)
     this.events = events(overlay, this)
-    this.events.bind('click .imagebox-prev', 'prev')
-    this.events.bind('click .imagebox-next', 'next')
     this.events.bind('click .imagebox-container', 'containerClick')
+  }
+  onkeyup(e) {
+    let code = e.which || e.keyCode || e.charCode
+    if (code == 27) this.cancel()
   }
   onclick(e) {
     if (e.target.tagName.toLowerCase() == 'img') {
@@ -101,7 +104,7 @@ class ImageBox {
       left: rect.left,
       top: rect.top
     })
-      .ease('in-out-quad')
+      .ease('linear')
       .to(dest)
       .duration(200)
 
@@ -140,6 +143,8 @@ class ImageBox {
     if (!img) return
     var current = query('img', this.container)
     if (current) this.container.removeChild(current)
+    let mask = query('.imagebox-mask', this.container)
+    if (mask && mask.parentNode) mask.parentNode.removeChild(mask)
     this.showImg(img)
   }
   next() {
@@ -148,10 +153,11 @@ class ImageBox {
     if (!img) return
     var current = query('img', this.container)
     if (current) this.container.removeChild(current)
+    let mask = query('.imagebox-mask', this.container)
+    if (mask && mask.parentNode) mask.parentNode.removeChild(mask)
     this.showImg(img)
   }
-  overlayClick(e) {
-    if (e.target !== overlay) return
+  cancel() {
     if (!classes(overlay).has('active')) return
     classes(overlay).remove('active')
     let el = this.container
@@ -163,6 +169,10 @@ class ImageBox {
       overlay.parentNode.removeChild(overlay)
       overlay.removeChild(el)
     }, 200)
+  }
+  overlayClick(e) {
+    if (e.target !== overlay) return
+    this.cancel()
   }
   showImg(img) {
     let i = this.imgs.indexOf(img)
@@ -190,6 +200,7 @@ class ImageBox {
       let dest = getDestination({w: obj.width, h: obj.height})
       return this.positionContainer(dest)
     }
+    this.container.style.backgroundImage = 'url(' + img.src + ')'
     return this.positionImage(image, i)
   }
   positionImage(image, i) {
@@ -225,7 +236,7 @@ class ImageBox {
     return new Promise(function (resolve, reject) {
       image.onload = function () {
         stop()
-        mask.parentNode.removeChild(mask)
+        if (mask.parentNode) mask.parentNode.removeChild(mask)
         resolve(imgDimension(image))
       }
       image.onerror = reject
@@ -233,6 +244,7 @@ class ImageBox {
   }
   unbind() {
     event.unbind(document.body, 'click', this._onclick)
+    event.unbind(document, 'keyup', this._onkeyup)
     event.unbind(overlay, 'click', this._overlayClick)
     this.events.unbind()
   }
@@ -256,7 +268,7 @@ function imgDimension(image) {
       width: image.naturalWidth
     }
   } else {
-    let i = new Image();
+    let i = new Image()
     i.src = image.src;
     return {
       height: i.height,
