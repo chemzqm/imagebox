@@ -1,6 +1,6 @@
 {
   "name": "imagebox",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "view images gallery easily on desktop browser",
   "main": "dest/index.js",
   "directories": {
@@ -14,7 +14,10 @@
     "type": "git",
     "url": "git+ssh://git@github.com/chemzqm/iamgebox.git"
   },
-  "keywords": ["gallery", "image"],
+  "keywords": [
+    "gallery",
+    "image"
+  ],
   "author": "chemzqm@gmail.com",
   "license": "MIT",
   "bugs": {
