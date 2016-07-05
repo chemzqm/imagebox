@@ -11,6 +11,7 @@ TODO:
 * add close to top right corner
 * limit container size for large image
 * more keybindings including (up down left right)
+* horizon scrollable for long images
 
 W.I.P. **use with caution**
 

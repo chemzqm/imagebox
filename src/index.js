@@ -87,12 +87,12 @@ class ImageBox {
       left: rect.left + 'px'
     })
     if (obj.complete) return this.showImg(img)
-    let dest = getDestination({w: w, h: h})
-    this.positionContainer(dest).then(function () {
+    this.positionContainer({w: w, h: h}).then(function () {
       this.showImg(img)
     }.bind(this))
   }
-  positionContainer(dest) {
+  positionContainer({w, h}, duration = 200) {
+    let dest = getDestination({w: w, h: h})
     let el = this.container
     if (!el) return
     let rect = el.getBoundingClientRect()
@@ -106,7 +106,7 @@ class ImageBox {
     })
       .ease('linear')
       .to(dest)
-      .duration(200)
+      .duration(duration)
 
     tween.update(function(o){
       assign(el.style, {
@@ -197,8 +197,7 @@ class ImageBox {
     this.container.style.display = 'block'
     let obj = this.album[i]
     if (obj.complete) {
-      let dest = getDestination({w: obj.width, h: obj.height})
-      return this.positionContainer(dest)
+      return this.positionContainer({w: obj.width, h: obj.height})
     }
     this.container.style.backgroundImage = 'url(' + img.src + ')'
     return this.positionImage(image, i)
@@ -215,8 +214,9 @@ class ImageBox {
       })
       // changed to other img
       if (self.current !== i) return Promise.resolve(null)
-      let dest = getDestination({w: w, h: h})
-      return self.positionContainer(dest)
+      return self.positionContainer({w: w, h: h})
+    }, function () {
+      return self.positionContainer({w: 300, h: 300})
     })
   }
   getImgDimension(image) {
@@ -239,7 +239,11 @@ class ImageBox {
         if (mask.parentNode) mask.parentNode.removeChild(mask)
         resolve(imgDimension(image))
       }
-      image.onerror = reject
+      image.onerror = function (e) {
+        stop()
+        if (mask.parentNode) mask.parentNode.removeChild(mask)
+        reject(e)
+      }
     })
   }
   unbind() {
