@@ -9,9 +9,12 @@ import assign from 'object-assign'
 import spin from './spin'
 import wheel from 'mouse-wheel'
 import throttle from 'throttleit'
+import _ from 'dom'
 
-let overlay = document.createElement('div')
-overlay.className = 'imagebox-overlay'
+let overlay = domify(`
+<div class="imagebox-overlay">
+</div>
+`)
 overlay.style.display = 'none'
 
 let tmpl = `
@@ -19,6 +22,7 @@ let tmpl = `
   <div class="imagebox-prev"></div>
   <div class="imagebox-next"></div>
   <div class="imagebox-info"></div>
+  <div class="imagebox-close"></div>
 </div>
 `
 
@@ -42,11 +46,17 @@ class ImageBox {
     event.bind(document, 'keyup', this._onkeyup)
     event.bind(overlay, 'click', this._overlayClick)
     this.events = events(overlay, this)
-    this.events.bind('click .imagebox-container', 'containerClick')
+    this.events.bind('click .image', 'containerClick')
+    this.events.bind('click .imagebox-close', 'cancel')
   }
   onkeyup(e) {
     let code = e.which || e.keyCode || e.charCode
-    if (code == 27) this.cancel()
+    if (code != 27 && (code < 37 || code > 40)) return
+    e.preventDefault()
+    if (code == 27) return this.cancel()
+    if (code == 37) return this.prev()
+    if (code == 39) return this.next()
+    // 38 UP 40 DOWN
   }
   onclick(e) {
     if (e.target.tagName.toLowerCase() == 'img') {
@@ -138,24 +148,14 @@ class ImageBox {
     this.next()
   }
   prev() {
-    if (this.animating) return
+    if (this.animating || !classes(overlay).has('active')) return
     var img = this.imgs[this.current - 1]
-    if (!img) return
-    var current = query('img', this.container)
-    if (current) this.container.removeChild(current)
-    let mask = query('.imagebox-mask', this.container)
-    if (mask && mask.parentNode) mask.parentNode.removeChild(mask)
-    this.showImg(img)
+    if (img) this.showImg(img)
   }
   next() {
-    if (this.animating) return
+    if (this.animating || !classes(overlay).has('active')) return
     var img = this.imgs[this.current + 1]
-    if (!img) return
-    var current = query('img', this.container)
-    if (current) this.container.removeChild(current)
-    let mask = query('.imagebox-mask', this.container)
-    if (mask && mask.parentNode) mask.parentNode.removeChild(mask)
-    this.showImg(img)
+    if (img) this.showImg(img)
   }
   cancel() {
     if (!classes(overlay).has('active')) return
@@ -166,8 +166,8 @@ class ImageBox {
     }
     this.container = null
     setTimeout(function () {
-      overlay.parentNode.removeChild(overlay)
-      overlay.removeChild(el)
+      _(overlay).remove()
+      _(el).remove()
     }, 200)
   }
   overlayClick(e) {
@@ -177,30 +177,27 @@ class ImageBox {
   showImg(img) {
     let i = this.imgs.indexOf(img)
     this.current = i
-    let prev = query('.imagebox-prev', this.container)
-    let next = query('.imagebox-next', this.container)
-    let info = query('.imagebox-info', this.container)
+    let container = this.container
+    let el = query('.image', container)
+    if (el) _(el).remove()
+    let prev = query('.imagebox-prev', container)
+    let next = query('.imagebox-next', container)
+    let info = query('.imagebox-info', container)
     info.textContent = (i + 1) + '/' + this.imgs.length
-    if (i == 0) {
-      prev.style.display = 'none'
-    } else {
-      prev.style.display = 'block'
-    }
-    if (i == this.imgs.length - 1) {
-      next.style.display = 'none'
-    } else {
-      next.style.display = 'block'
-    }
-    let image = document.createElement('img')
-    image.src = this.album[i].url
-    this.container.appendChild(image)
-    this.container.style.display = 'block'
+    prev.style.display = i == 0 ? 'none' : 'block'
+    next.style.display = i == this.imgs.length - 1? 'none' : 'block'
+    container.appendChild(domify(`
+      <div class="image">
+        <img src="${this.album[i].url}" width="100%" height="100%"/>
+      </div>
+    `))
+    container.style.display = 'block'
     let obj = this.album[i]
     if (obj.complete) {
       return this.positionContainer({w: obj.width, h: obj.height})
     }
-    this.container.style.backgroundImage = 'url(' + img.src + ')'
-    return this.positionImage(image, i)
+    container.style.backgroundImage = 'url(' + img.src + ')'
+    return this.positionImage(query('img', container), i)
   }
   positionImage(image, i) {
     let self = this
@@ -227,7 +224,7 @@ class ImageBox {
       `<div class="imagebox-mask">
         <div class="spin"></div>
       </div>`)
-    this.container.appendChild(mask)
+    query('.image', this.container).appendChild(mask)
     let stop = spin(query('.spin', mask), {
       color: '#ffffff',
       duration: 1000,
@@ -236,12 +233,12 @@ class ImageBox {
     return new Promise(function (resolve, reject) {
       image.onload = function () {
         stop()
-        if (mask.parentNode) mask.parentNode.removeChild(mask)
+        _(mask).remove()
         resolve(imgDimension(image))
       }
       image.onerror = function (e) {
         stop()
-        if (mask.parentNode) mask.parentNode.removeChild(mask)
+        _(mask).remove()
         reject(e)
       }
     })

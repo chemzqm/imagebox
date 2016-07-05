@@ -61,11 +61,27 @@
   right: 10px;
   background-image: url('./images/next.png');
 }
-.imagebox-container > img {
+.imagebox-close {
+  position: absolute;
+  right: 0px;
+  bottom: -23px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  background-size: contain;
+  background-position: 50%;
+  background-image: url('./images/close.png');
+}
+.imagebox-container img {
   border-radius: 4px;
   object-fit: cover;
-  width: 100%;
-  height: 100%;
+}
+.imagebox-container .image {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 .imagebox-mask {
   background-color: rgba(0,0,0,0.4);

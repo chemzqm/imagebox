@@ -73,12 +73,14 @@
     "component-query": "0.0.3",
     "component-raf": "^1.2.0",
     "component-tween": "^1.2.0",
+    "dom-easy": "^1.1.1",
     "domify": "^1.4.0",
     "mouse-wheel": "^1.2.0",
     "object-assign": "^4.1.0",
     "throttleit": "^1.0.0"
   },
   "browser": {
+    "dom": "dom-easy",
     "event": "component-event",
     "classes": "component-classes",
     "tween": "component-tween",

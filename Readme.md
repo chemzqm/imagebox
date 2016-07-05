@@ -4,13 +4,13 @@ View gallary of images on desktop.
 
 TODO:
 
-* error check
+* error check [done]
+* add close to top right corner [done]
+* more keybindings including (up down left right) [done]
 * resizeable by wheel and drag
 * add tip and tip option
 * transition back to original image
-* add close to top right corner
 * limit container size for large image
-* more keybindings including (up down left right)
 * horizon scrollable for long images
 
 W.I.P. **use with caution**
