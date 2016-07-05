@@ -2,6 +2,14 @@
 
 View gallary of images on desktop.
 
+TODO:
+
+* error check
+* resizeable by wheel and drag
+* add tip and tip option
+* transition back to original image
+* add close to top right corner
+
 W.I.P. **use with caution**
 
 [demo](https://chemzqm.github.io/imagebox/)
@@ -17,3 +25,24 @@ var ImageBox = require('imagebox')
 var imgs = document.querySelectorAll('#demo img')
 new ImageBox(imgs)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
