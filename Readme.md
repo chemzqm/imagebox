@@ -7,6 +7,7 @@ TODO:
 * error check [done]
 * add close to top right corner [done]
 * more keybindings including (up down left right) [done]
+* draggable [done]
 * resizeable by wheel and drag
 * add tip and tip option
 * transition back to original image

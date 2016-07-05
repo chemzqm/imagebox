@@ -6,10 +6,11 @@ import Tween from 'tween'
 import raf from 'raf'
 import query from 'query'
 import assign from 'object-assign'
-import spin from './spin'
 import wheel from 'mouse-wheel'
 import throttle from 'throttleit'
 import _ from 'dom'
+import spin from './spin'
+import Draggable from './dragable'
 
 let overlay = domify(`
 <div class="imagebox-overlay">
@@ -46,7 +47,7 @@ class ImageBox {
     event.bind(document, 'keyup', this._onkeyup)
     event.bind(overlay, 'click', this._overlayClick)
     this.events = events(overlay, this)
-    this.events.bind('click .image', 'containerClick')
+    this.events.bind('mouseup .image', 'containerClick')
     this.events.bind('click .imagebox-close', 'cancel')
   }
   onkeyup(e) {
@@ -67,8 +68,9 @@ class ImageBox {
     }
   }
   containerClick(e) {
-    let vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-    if (e.pageX > vw/2) {
+    let width = this.container.clientWidth
+    let left = parseInt(this.container.style.left)
+    if (e.pageX - left > width/2) {
       this.next()
     } else {
       this.prev()
@@ -77,6 +79,7 @@ class ImageBox {
   initContainer(img) {
     document.body.appendChild(overlay)
     this.container = domify(tmpl)
+    this.dragable = new Draggable(this.container)
     let onwheel = throttle(this.onwheel.bind(this), 1000)
     this._wheelHandler = wheel(this.container, onwheel, true)
     overlay.appendChild(this.container)
@@ -164,6 +167,7 @@ class ImageBox {
     if (el.removeEventListener) {
       el.removeEventListener('wheel', this._wheelHandler)
     }
+    if (this.dragable) this.dragable.unbind()
     this.container = null
     setTimeout(function () {
       _(overlay).remove()
@@ -244,6 +248,7 @@ class ImageBox {
     })
   }
   unbind() {
+    if (this.dragable) this.dragable.unbind()
     event.unbind(document.body, 'click', this._onclick)
     event.unbind(document, 'keyup', this._onkeyup)
     event.unbind(overlay, 'click', this._overlayClick)
