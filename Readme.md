@@ -16,7 +16,7 @@ W.I.P. **use with caution**
 * High performance animation for image popup and restore.
 * Friendly to SPA with unbind support.
 * Canvas loading spin and error check (auto retry).
-* Keyboard support (esc, left, right).
+* Keyboard support (ESC, left, right, up, down).
 * Wheel event support for zoom in/out and navigate.
 * Draggable & scalable with mouse.
 * Support images with higher dimension than viewport.
@@ -24,7 +24,7 @@ W.I.P. **use with caution**
 
 TODO:
 
-* scalable with key mouse wheel
+* support safari gesture events
 
 
 ## Usage

@@ -12,6 +12,7 @@ import _ from 'dom'
 import * as util from './util'
 import spin from './spin'
 import Draggable from './dragable'
+import Resizable from './resizable'
 
 let overlay = domify(`
 <div class="imagebox-overlay">
@@ -25,11 +26,15 @@ let tmpl = `
   <div class="imagebox-next"></div>
   <div class="imagebox-info"></div>
   <div class="imagebox-close"></div>
+  <div class="resize-handle-n"></div>
+  <div class="resize-handle-s"></div>
+  <div class="resize-handle-e"></div>
+  <div class="resize-handle-w"></div>
 </div>
 `
 
 class ImageBox {
-  constructor(imgs, opts = {}) {
+  constructor(imgs) {
     this.imgs = [].slice.call(imgs)
     this.album = []
     for (let i = 0, l = imgs.length; i < l; i++) {
@@ -64,10 +69,12 @@ class ImageBox {
     let code = e.which || e.keyCode || e.charCode
     if (code != 27 && (code < 37 || code > 40)) return
     e.preventDefault()
+    e.stopPropagation()
     if (code == 27) return this.cancel()
     if (code == 37) return this.prev()
     if (code == 39) return this.next()
-    // 38 UP 40 DOWN
+    if (code == 38) return this.scale(1)
+    if (code == 40) return this.scale(-1)
   }
   /**
    * Image click handler
@@ -89,9 +96,20 @@ class ImageBox {
    * @param {number} dy
    */
   onwheel(dx, dy) {
-    if (Math.abs(dy) > Math.abs(dx)) return
-    if (dx < 0) return this.prev()
-    this.next()
+    if (this.animating) return
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) {
+        this.prev()
+      } else {
+        this.next()
+      }
+    } else {
+      if (dy < 0) {
+        this.scale(-1)
+      } else {
+        this.scale(1)
+      }
+    }
   }
   /**
    * Overlay click event handler
@@ -128,6 +146,7 @@ class ImageBox {
     document.body.appendChild(overlay)
     this.container = domify(tmpl)
     this.dragable = new Draggable(this.container)
+    this.resizable = new Resizable(this.container)
     let onwheel = throttle(this.onwheel.bind(this), 1000)
     this._wheelHandler = wheel(this.container, onwheel, true)
     overlay.appendChild(this.container)
@@ -197,6 +216,8 @@ class ImageBox {
   }
   /**
    * show next image
+   *
+   * @public
    */
   prev() {
     if (this.animating || !classes(overlay).has('active')) return
@@ -205,6 +226,8 @@ class ImageBox {
   }
   /**
    * show previous image
+   *
+   * @public
    */
   next() {
     if (this.animating || !classes(overlay).has('active')) return
@@ -225,6 +248,9 @@ class ImageBox {
     }
     this.restore()
     if (this.dragable) this.dragable.unbind()
+    if (this.resizable) this.resizable.unbind()
+    this.dragable = null
+    this.resizable = null
     this.container = null
     setTimeout(function () {
       _(overlay).remove()
@@ -331,6 +357,21 @@ class ImageBox {
     query('.image', this.container).style.opacity = 0
     this.positionContainer(dest)
   }
+  scale(dir) {
+    if (this.animating) return
+    let el = this.container
+    let rect = el.getBoundingClientRect()
+    let w = rect.width || el.clientWidth
+    let h = rect.height || el.clientHeight
+    let ratio = dir > 0 ? 1.25 : 0.8
+    let dest = {
+      w: w*ratio,
+      h: h*ratio,
+      left: rect.left - (w*ratio - w)/2,
+      top: rect.top - (h*ratio - h)/2
+    }
+    this.positionContainer(dest, 100)
+  }
   /**
    * unbind all event listeners
    *
@@ -338,6 +379,7 @@ class ImageBox {
    */
   unbind() {
     if (this.dragable) this.dragable.unbind()
+    if (this.resizable) this.resizable.unbind()
     event.unbind(document.body, 'click', this._onclick)
     event.unbind(document, 'keyup', this._onkeyup)
     event.unbind(overlay, 'click', this._overlayClick)

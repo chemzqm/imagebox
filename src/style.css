@@ -14,7 +14,6 @@
 }
 .imagebox-container {
   will-change: left, top;
-  cursor: -webkit-grab;
   position: fixed;
   display: none;
   z-index: 1;
@@ -53,7 +52,7 @@
   height: 45px;
   margin-top: -23px;
   opacity: 0;
-  z-index: 2;
+z-index: 2;
   transition: opacity 0.2s linear;
 }
 .imagebox-prev {
@@ -80,6 +79,7 @@
   object-fit: cover;
 }
 .imagebox-container .image {
+  cursor: -webkit-grab;
   position: absolute;
   left: 0;
   right: 0;
@@ -103,4 +103,35 @@
   left: 50%;
   margin-top: -16px;
   margin-left: -16px;
+}
+[class*="resize-handle"] {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 3;
+}
+.resize-handle-n {
+	width: 100%;
+  left: 0;
+  top: 0;
+	cursor: ns-resize;
+}
+
+.resize-handle-s {
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	cursor: ns-resize;
+}
+
+.resize-handle-e {
+	right: 0;
+	height: 100%;
+	cursor: ew-resize;
+}
+
+.resize-handle-w {
+	left: 0;
+	height: 100%;
+	cursor: ew-resize;
 }

@@ -1,5 +1,6 @@
 import events from 'events'
 import assign from 'object-assign'
+import closest from 'closest'
 
 class Dragable {
   constructor(el) {
@@ -12,6 +13,8 @@ class Dragable {
     this.docEvents.bind('mouseup')
   }
   onmousedown(e) {
+    let image = closest(e.target, '.image', this.el)
+    if (!image) return
     let style = this.el.style
     this.down = {
       x: e.pageX,
@@ -36,11 +39,11 @@ class Dragable {
     let dx = e.pageX - this.down.x
     let dy = e.pageY - this.down.y
     let delta = Math.sqrt(dx*dx + dy*dy)
+    this.down = null
     if (delta > 5) {
       e.stopImmediatePropagation()
       e.stopPropagation()
     }
-    this.down = null
   }
   unbind() {
     this.events.unbind()

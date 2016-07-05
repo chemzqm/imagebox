@@ -68,6 +68,7 @@
   "dependencies": {
     "autoscale-canvas": "0.0.3",
     "component-classes": "^1.2.6",
+    "component-closest": "^1.0.1",
     "component-event": "^0.1.4",
     "component-events": "^1.0.10",
     "component-query": "0.0.3",
@@ -86,6 +87,7 @@
     "tween": "component-tween",
     "raf": "component-raf",
     "events": "component-events",
-    "query": "component-query"
+    "query": "component-query",
+    "closest": "component-closest"
   }
 }
