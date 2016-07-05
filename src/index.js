@@ -8,8 +8,9 @@ import query from 'query'
 import assign from 'object-assign'
 import wheel from 'mouse-wheel'
 import throttle from 'throttleit'
-import _ from 'dom'
+import * as util from './util'
 import spin from './spin'
+import _ from 'dom'
 import Draggable from './dragable'
 
 let overlay = domify(`
@@ -50,7 +51,14 @@ class ImageBox {
     this.events.bind('mouseup .image', 'containerClick')
     this.events.bind('click .imagebox-close', 'cancel')
   }
+  /**
+   * Keyup event handler
+   *
+   * @private
+   * @param  {Event}  e
+   */
   onkeyup(e) {
+    if (!classes(overlay).has('active')) return
     let code = e.which || e.keyCode || e.charCode
     if (code != 27 && (code < 37 || code > 40)) return
     e.preventDefault()
@@ -59,14 +67,46 @@ class ImageBox {
     if (code == 39) return this.next()
     // 38 UP 40 DOWN
   }
+  /**
+   * Image click handler
+   *
+   * @private
+   * @param  {Event}  e
+   */
   onclick(e) {
     if (e.target.tagName.toLowerCase() == 'img') {
       let i = this.imgs.indexOf(e.target) 
-      if (i !== -1) {
-        this.initContainer(e.target)
-      }
+      if (i !== -1) this.initContainer(e.target)
     }
   }
+  /**
+   * Wheel event handler of container
+   *
+   * @private
+   * @param {number} dx
+   * @param {number} dy
+   */
+  onwheel(dx, dy) {
+    if (Math.abs(dy) > Math.abs(dx)) return
+    if (dx < 0) return this.prev()
+    this.next()
+  }
+  /**
+   * Overlay click event handler
+   *
+   * @private
+   * @param  {Event}  e
+   */
+  overlayClick(e) {
+    if (e.target !== overlay) return
+    this.cancel()
+  }
+  /**
+   * Container click event handler
+   *
+   * @private
+   * @param  {Event}  e
+   */
   containerClick(e) {
     let width = this.container.clientWidth
     let left = parseInt(this.container.style.left)
@@ -76,6 +116,12 @@ class ImageBox {
       this.prev()
     }
   }
+  /**
+   * Prepare container with img as shown image
+   *
+   * @private
+   * @param {Element} img image element to show
+   */
   initContainer(img) {
     document.body.appendChild(overlay)
     this.container = domify(tmpl)
@@ -104,8 +150,10 @@ class ImageBox {
       this.showImg(img)
     }.bind(this))
   }
-  positionContainer({w, h}, duration = 200) {
+  positionContainer({w, h, top, left}, duration = 200) {
     let dest = getDestination({w: w, h: h})
+    if (top != null) dest.top = top
+    if (left != null) dest.left = left
     let el = this.container
     if (!el) return
     let rect = el.getBoundingClientRect()
@@ -145,21 +193,27 @@ class ImageBox {
     animate()
     return promise
   }
-  onwheel(dx, dy) {
-    if (Math.abs(dy) > Math.abs(dx)) return
-    if (dx < 0) return this.prev()
-    this.next()
-  }
+  /**
+   * show next image
+   */
   prev() {
     if (this.animating || !classes(overlay).has('active')) return
     var img = this.imgs[this.current - 1]
     if (img) this.showImg(img)
   }
+  /**
+   * show previous image
+   */
   next() {
     if (this.animating || !classes(overlay).has('active')) return
     var img = this.imgs[this.current + 1]
     if (img) this.showImg(img)
   }
+  /**
+   * Cancel active state
+   *
+   * @public
+   */
   cancel() {
     if (!classes(overlay).has('active')) return
     classes(overlay).remove('active')
@@ -167,17 +221,21 @@ class ImageBox {
     if (el.removeEventListener) {
       el.removeEventListener('wheel', this._wheelHandler)
     }
+    this.restore()
     if (this.dragable) this.dragable.unbind()
     this.container = null
     setTimeout(function () {
       _(overlay).remove()
       _(el).remove()
-    }, 200)
+    }, 250)
   }
-  overlayClick(e) {
-    if (e.target !== overlay) return
-    this.cancel()
-  }
+  /**
+   * Display a image
+   *
+   * @public
+   * @param {Eleemnt} img
+   * @returns {Promise} promise of animation
+   */
   showImg(img) {
     let i = this.imgs.indexOf(img)
     this.current = i
@@ -197,12 +255,14 @@ class ImageBox {
     `))
     container.style.display = 'block'
     let obj = this.album[i]
-    if (obj.complete) {
-      return this.positionContainer({w: obj.width, h: obj.height})
-    }
     container.style.backgroundImage = 'url(' + img.src + ')'
+    if (obj.complete) {
+      let o = limitToViewport({width: obj.width, height: obj.height})
+      return this.positionContainer(o)
+    }
     return this.positionImage(query('img', container), i)
   }
+  // resize image container to iamge nature size
   positionImage(image, i) {
     let self = this
     return this.getImgDimension(image).then(function (dims) {
@@ -215,11 +275,19 @@ class ImageBox {
       })
       // changed to other img
       if (self.current !== i) return Promise.resolve(null)
-      return self.positionContainer({w: w, h: h})
+      let o = limitToViewport({width: w, height: h})
+      return self.positionContainer(o)
     }, function () {
       return self.positionContainer({w: 300, h: 300})
     })
   }
+  /**
+   * Get nature size of image
+   *
+   * @public
+   * @param {Element} image
+   * @returns {Promise}
+   */
   getImgDimension(image) {
     if (image.complete) {
       return Promise.resolve(imgDimension(image))
@@ -247,6 +315,25 @@ class ImageBox {
       }
     })
   }
+  restore() {
+    let img = this.imgs[this.current]
+    if (!img) return
+    let rect = img.getBoundingClientRect()
+    //if (rect.bottom < 0 || rect.top > util.viewHeight()) return
+    let dest = {
+      w: img.clientWidth,
+      h: img.clientHeight,
+      top: rect.top,
+      left: rect.left
+    }
+    query('.image', this.container).style.opacity = 0
+    this.positionContainer(dest)
+  }
+  /**
+   * unbind all event listeners
+   *
+   * @public
+   */
   unbind() {
     if (this.dragable) this.dragable.unbind()
     event.unbind(document.body, 'click', this._onclick)
@@ -257,14 +344,20 @@ class ImageBox {
 }
 
 function getDestination(dims) {
-  let vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-  let vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
   return {
     width: dims.w,
     height: dims.h,
-    left: (vw - dims.w)/2,
-    top: (vh - dims.h)/2
+    left: (util.viewWidth() - dims.w)/2,
+    top: (util.viewHeight() - dims.h)/2
   }
+}
+
+function limitToViewport({width, height}) {
+  let sx = width/util.viewWidth()
+  let sy = height/util.viewHeight()
+  if (sx > 1 && sx >= sy) return {w: width/sx - 60, h: height*(width/sx - 60)/width}
+  if (sy > 1 && sy >= sx) return {h: height/sy - 60, w: width*(height/sy - 60)/height}
+  return {w: width, h:height}
 }
 
 function imgDimension(image) {

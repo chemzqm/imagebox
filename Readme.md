@@ -1,24 +1,34 @@
 # Imagebox
 
-View gallary of images on desktop.
+View gallary of images on desktop. (without jquery)
 
-TODO:
-
-* error check [done]
-* add close to top right corner [done]
-* more keybindings including (up down left right) [done]
-* draggable [done]
-* resizeable by wheel and drag
-* add tip and tip option
-* transition back to original image
-* limit container size for large image
-* horizon scrollable for long images
-
-W.I.P. **use with caution**
+Tested on Chrome Firefox, Safari.
 
 [demo](https://chemzqm.github.io/imagebox/)
 
-Tested on Chrome Firefox, Safari.
+W.I.P. **use with caution**
+
+
+## Features
+
+* Click to navigate though images.
+* Support responsive image with url filter.
+* High performance animation for popup and restore.
+* Friendly to SPA with unbind support.
+* Canvas loading spin and error check (auto retry).
+* Keyboard support (esc, left, right).
+* Wheel event support for zoom in/out and navigate.
+* Draggable with mouse.
+* Support images with higher dimension than viewport.
+* No jQuery dependency, easy to use API.
+
+TODO:
+
+* more keybindings including (up down left right) [done]
+* transition back to original image
+* resizeable by wheel and drag
+* add tip and tip option
+
 
 ## Usage
 
@@ -29,24 +39,3 @@ var ImageBox = require('imagebox')
 var imgs = document.querySelectorAll('#demo img')
 new ImageBox(imgs)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

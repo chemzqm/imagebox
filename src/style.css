@@ -5,7 +5,7 @@
   top: 0;
   bottom: 0;
   background-color: rgba(0,0,0,0);
-  transition: background-color 0.2s linear;
+  transition: background-color 0.25s linear;
   z-index: 99;
   display: none;
 }
@@ -13,6 +13,7 @@
   background-color: rgba(0,0,0,0.8);
 }
 .imagebox-container {
+  will-change: left, top;
   cursor: -webkit-grab;
   position: fixed;
   display: none;
@@ -20,10 +21,9 @@
   user-select: none;
   -webkit-user-select: none;
   box-shadow: 0 1px 7px rgba(0,0,0,0.6);
-  background-color: #fff;
   background-position: 50%;
   background-repeat: no-repeat;
-  background-size: auto;
+  background-size: cover;
   border-radius: 4px;
 }
 .imagebox-info {
@@ -87,6 +87,7 @@
 }
 .imagebox-mask {
   background-color: rgba(0,0,0,0.4);
+  z-index: 9999;
   position: absolute;
   left: 0;
   right: 0;
