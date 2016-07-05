@@ -9,6 +9,8 @@ TODO:
 * add tip and tip option
 * transition back to original image
 * add close to top right corner
+* limit container size for large image
+* more keybindings including (up down left right)
 
 W.I.P. **use with caution**
 
