@@ -1,6 +1,6 @@
 {
   "name": "imagebox",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "view images gallery easily on desktop browser",
   "main": "dest/index.js",
   "directories": {
