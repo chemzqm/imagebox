@@ -8,9 +8,9 @@ import query from 'query'
 import assign from 'object-assign'
 import wheel from 'mouse-wheel'
 import throttle from 'throttleit'
+import _ from 'dom'
 import * as util from './util'
 import spin from './spin'
-import _ from 'dom'
 import Draggable from './dragable'
 
 let overlay = domify(`
@@ -29,7 +29,7 @@ let tmpl = `
 `
 
 class ImageBox {
-  constructor(imgs) {
+  constructor(imgs, opts = {}) {
     this.imgs = [].slice.call(imgs)
     this.album = []
     for (let i = 0, l = imgs.length; i < l; i++) {
@@ -48,6 +48,8 @@ class ImageBox {
     event.bind(document, 'keyup', this._onkeyup)
     event.bind(overlay, 'click', this._overlayClick)
     this.events = events(overlay, this)
+    this.events.bind('click .imagebox-prev', 'prev')
+    this.events.bind('click .imagebox-next', 'next')
     this.events.bind('mouseup .image', 'containerClick')
     this.events.bind('click .imagebox-close', 'cancel')
   }
@@ -339,6 +341,8 @@ class ImageBox {
     event.unbind(document.body, 'click', this._onclick)
     event.unbind(document, 'keyup', this._onkeyup)
     event.unbind(overlay, 'click', this._overlayClick)
+    let el = this.container
+    if (el && el.removeEventListener) el.removeEventListener('wheel', this._wheelHandler)
     this.events.unbind()
   }
 }

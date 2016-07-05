@@ -17,7 +17,7 @@
   cursor: -webkit-grab;
   position: fixed;
   display: none;
-  z-index: 9999;
+  z-index: 1;
   user-select: none;
   -webkit-user-select: none;
   box-shadow: 0 1px 7px rgba(0,0,0,0.6);
@@ -53,6 +53,7 @@
   height: 45px;
   margin-top: -23px;
   opacity: 0;
+  z-index: 2;
   transition: opacity 0.2s linear;
 }
 .imagebox-prev {

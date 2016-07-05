@@ -13,21 +13,18 @@ W.I.P. **use with caution**
 
 * Click to navigate though images.
 * Support responsive image with url filter.
-* High performance animation for popup and restore.
+* High performance animation for image popup and restore.
 * Friendly to SPA with unbind support.
 * Canvas loading spin and error check (auto retry).
 * Keyboard support (esc, left, right).
 * Wheel event support for zoom in/out and navigate.
-* Draggable with mouse.
+* Draggable & scalable with mouse.
 * Support images with higher dimension than viewport.
 * No jQuery dependency, easy to use API.
 
 TODO:
 
-* more keybindings including (up down left right) [done]
-* transition back to original image
-* resizeable by wheel and drag
-* add tip and tip option
+* scalable with key mouse wheel
 
 
 ## Usage
