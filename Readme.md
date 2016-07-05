@@ -2,6 +2,8 @@
 
 View gallary of images on desktop.
 
+W.I.P. **use with caution**
+
 [demo](https://chemzqm.github.io/imagebox/)
 
 Tested on Chrome Firefox, Safari.
