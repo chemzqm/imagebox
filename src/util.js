@@ -7,3 +7,11 @@ export function viewHeight() {
 export function viewWidth() {
   return Math.max(doc.clientWidth, window.innerWidth || 0)
 }
+
+export function toArray(els) {
+  let arr = []
+  for (var i = 0, l = els.length; i < l; i++) {
+    arr.push(els[i])
+  }
+  return arr
+}

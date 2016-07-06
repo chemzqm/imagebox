@@ -13,12 +13,11 @@ class Dragable {
     this.docEvents.bind('mouseup')
   }
   onmousedown(e) {
-    let image = closest(e.target, '.image', this.el)
-    if (!image) return
+    if (!e.target.tagName.toLowerCase() == 'img') return
     let style = this.el.style
     this.down = {
-      x: e.pageX,
-      y: e.pageY,
+      x: e.pageX || e.clientX,
+      y: e.pageY || e.clientY,
       top: parseInt(style.top) || 0,
       left: parseInt(style.left) || 0
     }
@@ -27,8 +26,8 @@ class Dragable {
     if (!this.down) return
     e.preventDefault()
     let style = this.el.style
-    let top = this.down.top + e.pageY - this.down.y
-    let left = this.down.left + e.pageX - this.down.x
+    let top = this.down.top + (e.pageY || e.clientY) - this.down.y
+    let left = this.down.left + (e.pageX || e.clientX) - this.down.x
     assign(style, {
       top: top + 'px',
       left: left + 'px'
@@ -36,8 +35,8 @@ class Dragable {
   }
   onmouseup(e) {
     if (!this.down) return
-    let dx = e.pageX - this.down.x
-    let dy = e.pageY - this.down.y
+    let dx = (e.pageX || e.clientX) - this.down.x
+    let dy = (e.pageY || e.clientY) - this.down.y
     let delta = Math.sqrt(dx*dx + dy*dy)
     this.down = null
     if (delta > 5) {

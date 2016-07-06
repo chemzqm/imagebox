@@ -6,7 +6,7 @@ import Tween from 'tween'
 import raf from 'raf'
 import query from 'query'
 import assign from 'object-assign'
-import wheel from 'mouse-wheel'
+import wheel from 'mouse-wheel-event'
 import throttle from 'throttleit'
 import _ from 'dom'
 import * as util from './util'
@@ -35,7 +35,7 @@ let tmpl = `
 
 class ImageBox {
   constructor(imgs) {
-    this.imgs = [].slice.call(imgs)
+    this.imgs = util.toArray(imgs)
     this.album = []
     for (let i = 0, l = imgs.length; i < l; i++) {
       let img = imgs[i]
@@ -55,7 +55,7 @@ class ImageBox {
     this.events = events(overlay, this)
     this.events.bind('click .imagebox-prev', 'prev')
     this.events.bind('click .imagebox-next', 'next')
-    this.events.bind('mouseup .image', 'containerClick')
+    this.events.bind('mouseup .imagebox-container', 'containerClick')
     this.events.bind('click .imagebox-close', 'cancel')
   }
   /**
@@ -128,9 +128,10 @@ class ImageBox {
    * @param  {Event}  e
    */
   containerClick(e) {
+    if (!e.target.tagName.toLowerCase() == 'img') return
     let width = this.container.clientWidth
-    let left = parseInt(this.container.style.left)
-    if (e.pageX - left > width/2) {
+    let left = parseInt(this.container.style.left) || 0
+    if ((e.pageX || e.clientX) - left > width/2) {
       this.next()
     } else {
       this.prev()
@@ -147,9 +148,9 @@ class ImageBox {
     this.container = domify(tmpl)
     this.dragable = new Draggable(this.container)
     this.resizable = new Resizable(this.container)
-    let onwheel = throttle(this.onwheel.bind(this), 1000)
-    this._wheelHandler = wheel(this.container, onwheel, true)
     overlay.appendChild(this.container)
+    let onwheel = throttle(this.onwheel.bind(this), 1000)
+    this._wheelUnbind = wheel(this.container, onwheel, true)
     overlay.style.display = 'block'
     setTimeout(function () {
       classes(overlay).add('active')
@@ -243,9 +244,7 @@ class ImageBox {
     if (!classes(overlay).has('active')) return
     classes(overlay).remove('active')
     let el = this.container
-    if (el.removeEventListener) {
-      el.removeEventListener('wheel', this._wheelHandler)
-    }
+    this._wheelUnbind()
     this.restore()
     if (this.dragable) this.dragable.unbind()
     if (this.resizable) this.resizable.unbind()
@@ -268,27 +267,28 @@ class ImageBox {
     let i = this.imgs.indexOf(img)
     this.current = i
     let container = this.container
-    let el = query('.image', container)
-    if (el) _(el).remove()
+    let el = query('.imagebox-img', container)
+    if (el) el.parentNode.removeChild(el)
     let prev = query('.imagebox-prev', container)
     let next = query('.imagebox-next', container)
     let info = query('.imagebox-info', container)
     info.textContent = (i + 1) + '/' + this.imgs.length
     prev.style.display = i == 0 ? 'none' : 'block'
     next.style.display = i == this.imgs.length - 1? 'none' : 'block'
-    container.appendChild(domify(`
-      <div class="image">
-        <img src="${this.album[i].url}" width="100%" height="100%"/>
-      </div>
-    `))
-    container.style.display = 'block'
+    let image = document.createElement('img')
+    image.className = 'imagebox-img'
     let obj = this.album[i]
+    image.height = '100%'
+    image.width = '100%'
+    image.src = obj.url
+    container.appendChild(image)
+    container.style.display = 'block'
     container.style.backgroundImage = 'url(' + img.src + ')'
     if (obj.complete) {
       let o = limitToViewport({width: obj.width, height: obj.height})
       return this.positionContainer(o)
     }
-    return this.positionImage(query('img', container), i)
+    return this.positionImage(image, i)
   }
   // resize image container to iamge nature size
   positionImage(image, i) {
@@ -324,12 +324,14 @@ class ImageBox {
       `<div class="imagebox-mask">
         <div class="spin"></div>
       </div>`)
-    query('.image', this.container).appendChild(mask)
-    let stop = spin(query('.spin', mask), {
+    this.container.appendChild(mask)
+
+    let stop = document.addEventListener ? spin(query('.spin', mask), {
       color: '#ffffff',
       duration: 1000,
       width: 4
-    })
+    }) : function() {}
+
     return new Promise(function (resolve, reject) {
       image.onload = function () {
         stop()
@@ -354,12 +356,11 @@ class ImageBox {
       top: rect.top,
       left: rect.left
     }
-    query('.image', this.container).style.opacity = 0
     this.positionContainer(dest)
   }
   scale(dir) {
-    if (this.animating) return
     let el = this.container
+    if (this.animating || !el) return
     let rect = el.getBoundingClientRect()
     let w = rect.width || el.clientWidth
     let h = rect.height || el.clientHeight

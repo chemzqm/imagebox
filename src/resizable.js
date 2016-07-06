@@ -19,8 +19,8 @@ class Resizable {
     let h = this.el.clientHeight
     this.down = {
       pos: m[1],
-      x: e.pageX,
-      y: e.pageY,
+      x: e.pageX || e.clientX,
+      y: e.pageY || e.clientY,
       ratio: h/w,
       width: w,
       height: h,
@@ -35,7 +35,7 @@ class Resizable {
     let style = this.el.style
     let {pos, x, y, width, height, ratio, top, left} = this.down
     let vertical = /^(n|s)$/.test(pos)
-    let dis = vertical ? e.pageY - y : e.pageX - x
+    let dis = vertical ? (e.pageY || e.clientY) - y : (e.pageX || e.clientX) - x
     if (vertical) {
       if (pos === 'n') dis = -dis
       let dw = dis/ratio

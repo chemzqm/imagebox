@@ -1,4 +1,5 @@
 var cssnext = require('postcss-cssnext')
+var colorRgbaFallback = require('postcss-color-rgba-fallback')
 
 module.exports = {
   entry: './example/index.js',
@@ -9,13 +10,13 @@ module.exports = {
   module: {
     loaders: [
       {test: /\.svg/, loader: 'svg-url-loader'},
-      {test: /\.jsx?$/, exclude: /(node_modules|dist)/, loader: 'babel', query: { presets: ['es2015']}},
+      {test: /\.jsx?$/, exclude: /(node_modules|dest)/, loader: 'babel-loader'},
       {test: /\.css$/, loader: 'style!css!postcss'},
       {test: /\.(png|gif)$/, loader: 'url-loader'},
       {test: /\.json$/, loader: 'json' },
       {test: /\.html$/, loader: 'html'}
     ]
   },
-  postcss: [cssnext()],
+  postcss: [cssnext(), colorRgbaFallback({oldie: true})],
   plugins: []
 }

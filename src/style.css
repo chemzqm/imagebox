@@ -19,11 +19,13 @@
   z-index: 1;
   user-select: none;
   -webkit-user-select: none;
+  cursor: -webkit-grab;
   box-shadow: 0 1px 7px rgba(0,0,0,0.6);
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 4px;
+  -ms-behavior: url(/backgroundsize.min.htc);
 }
 .imagebox-info {
   position: absolute;
@@ -73,21 +75,16 @@ z-index: 2;
   background-size: contain;
   background-position: 50%;
   background-image: url('./images/close.png');
+  -ms-behavior: url(/backgroundsize.min.htc);
 }
 .imagebox-container img {
   border-radius: 4px;
   object-fit: cover;
-}
-.imagebox-container .image {
-  cursor: -webkit-grab;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
 }
 .imagebox-mask {
-  background-color: rgba(0,0,0,0.4);
+  /*background-color: rgba(0,0,0,0.4);*/
   z-index: 9999;
   position: absolute;
   left: 0;
@@ -104,11 +101,17 @@ z-index: 2;
   margin-top: -16px;
   margin-left: -16px;
 }
-[class*="resize-handle"] {
+.resize-handle-n,
+.resize-handle-s,
+.resize-handle-e,
+.resize-handle-w {
   position: absolute;
   width: 10px;
   height: 10px;
-  z-index: 3;
+  z-index: 9999;
+  background-color: #fff;
+  filter: alpha(opacity=0);
+  opacity: 0;
 }
 .resize-handle-n {
 	width: 100%;

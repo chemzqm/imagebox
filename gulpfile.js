@@ -13,7 +13,7 @@ var testIndex = './test/test.js'
 var port = 8080
 // no conflict
 var myConfig = Object.assign({}, config, {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'source-map',
   cache: true,
   debug: true
 })

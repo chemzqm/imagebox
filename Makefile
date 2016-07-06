@@ -18,7 +18,9 @@ prepublish:
 	@babel src -d dest
 
 doc:
+	@cp backgroundsize.min.htc example
 	@ghp-import example -n -p
+	@rm example/backgroundsize.min.htc
 
 tags:
 	@jsctags src/*.js example/index.js -f > tags
