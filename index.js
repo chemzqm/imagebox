@@ -1,5 +1,16 @@
+import ImageBox from '../src/index'
 require('./style.css')
 require('../src/style.css')
-import ImageBox from '../src/index'
+
 let imgs = document.querySelectorAll('#demo img')
-new ImageBox(imgs)
+let box = new ImageBox(imgs, {
+  convertor: function (src) {
+    return src.replace(/-\w+$/, '')
+  }
+})
+box.on('show', function () {
+  console.log('show')
+})
+box.on('hide', function () {
+  console.log('hide')
+})
