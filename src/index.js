@@ -34,15 +34,15 @@ let tmpl = `
 `
 
 class ImageBox {
-  constructor(imgs) {
+  constructor(imgs, opts = {}) {
     this.imgs = util.toArray(imgs)
     this.album = []
+    let convertor = opts.convertor
     for (let i = 0, l = imgs.length; i < l; i++) {
       let img = imgs[i]
       img.style.cursor = 'zoom-in'
       this.album.push({
-        // replace qiniu suffix
-        url: img.src.replace(/-\w+$/, ''),
+        url: convertor ? convertor(img.src) : img.src,
         complete: false
       })
     }
