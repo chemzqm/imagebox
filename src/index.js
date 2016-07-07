@@ -293,6 +293,10 @@ class ImageBox extends Emitter {
     let image = document.createElement('img')
     image.className = 'imagebox-img'
     let obj = this.album[i]
+    image.ondragstart= function (e) {
+      e.preventDefault()
+      return false
+    }
     image.height = '100%'
     image.width = '100%'
     image.src = obj.url
