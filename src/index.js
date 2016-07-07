@@ -63,11 +63,11 @@ class ImageBox extends Emitter {
     this.events.bind('gesturechange')
   }
   ongesturestart(e) {
-    if (!classes(overlay).has('active') || this.animating) return
+    if (!classes(overlay).has('active')) return
     e.preventDefault()
   }
   ongesturechange(e) {
-    if (!classes(overlay).has('active') || this.animating) return
+    if (!classes(overlay).has('active')) return
     e.preventDefault()
     this.scale(e.scale, {x: e.clientX, y: e.clientY})
   }
@@ -305,7 +305,13 @@ class ImageBox extends Emitter {
     }
     return this.positionImage(image, i)
   }
-  // resize image container to iamge nature size
+  /**
+   * Position current image element
+   *
+   * @private
+   * @param {Element} image
+   * @param  {Number}  i
+   */
   positionImage(image, i) {
     let self = this
     return this.getImgDimension(image).then(function (dims) {
@@ -387,6 +393,9 @@ class ImageBox extends Emitter {
       left: rect.left - (w*ratio - w)*(x - rect.left)/w,
       top: rect.top - (h*ratio - h)*(y - rect.top)/h
     }
+    let cur = this.album[this.current]
+    if (dest.w < 200) return
+    if (dest.w > cur.width*2) return
     this.positionContainer(dest, 100)
   }
   /**
