@@ -283,7 +283,9 @@ class ImageBox extends Emitter {
     this.current = i
     let container = this.container
     let el = query('.imagebox-img', container)
-    if (el) el.parentNode.removeChild(el)
+    if (el) _(el).remove()
+    let mask = query('.imagebox-mask', container)
+    if (mask) _(mask).remove()
     let prev = query('.imagebox-prev', container)
     let next = query('.imagebox-next', container)
     let info = query('.imagebox-info', container)
