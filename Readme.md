@@ -2,12 +2,20 @@
 
 View gallary of images on desktop. (without jquery)
 
-Tested on Chrome Firefox, Safari.
+Tested on IE8 Chrome Firefox and Safari.
 
 [demo](https://chemzqm.github.io/imagebox/)
 
 W.I.P. **use with caution**
 
+If you need to support IE8, you will need to include `es5shim` and `Promise polyfill`, like:
+
+``` html
+<!--[if lt IE 9]>
+<script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-shim.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/native-promise-only/0.8.1/npo.js"></script>
+<![endif]-->
+```
 
 ## Features
 
