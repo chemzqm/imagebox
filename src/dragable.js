@@ -1,6 +1,5 @@
 import events from 'events'
 import assign from 'object-assign'
-import closest from 'closest'
 
 class Dragable {
   constructor(el) {
@@ -13,7 +12,7 @@ class Dragable {
     this.docEvents.bind('mouseup')
   }
   onmousedown(e) {
-    if (!e.target.tagName.toLowerCase() == 'img') return
+    if (e.target.tagName.toLowerCase() != 'img') return
     let style = this.el.style
     this.down = {
       x: e.pageX || e.clientX,

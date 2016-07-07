@@ -59,6 +59,7 @@ class Resizable {
   onmouseup(e) {
     if (!this.down) return
     e.stopImmediatePropagation()
+    e.preventDefault()
     e.stopPropagation()
     this.down = null
   }

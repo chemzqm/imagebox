@@ -65,6 +65,7 @@ class ImageBox {
    * @param  {Event}  e
    */
   onkeyup(e) {
+    if (e.defaultPrevented) return
     if (!classes(overlay).has('active')) return
     let code = e.which || e.keyCode || e.charCode
     if (code != 27 && (code < 37 || code > 40)) return
@@ -98,17 +99,10 @@ class ImageBox {
   onwheel(dx, dy) {
     if (this.animating) return
     if (Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) {
-        this.prev()
-      } else {
-        this.next()
-      }
+      dx < 0 ? this.prev() : this.next()
     } else {
-      if (dy < 0) {
-        this.scale(-1)
-      } else {
-        this.scale(1)
-      }
+      if (Math.abs(dy) < 5) return
+      dy < 0 ? this.scale(-1) : this.scale(1)
     }
   }
   /**
