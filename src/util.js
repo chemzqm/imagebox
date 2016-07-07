@@ -15,3 +15,7 @@ export function toArray(els) {
   }
   return arr
 }
+
+export function now() {
+  return (new Date()).getTime()
+}

@@ -76,6 +76,7 @@
     "autoscale-canvas": "0.0.3",
     "component-classes": "^1.2.6",
     "component-closest": "^1.0.1",
+    "component-emitter": "^1.2.1",
     "component-event": "^0.1.4",
     "component-events": "^1.0.10",
     "component-query": "0.0.3",
@@ -83,7 +84,7 @@
     "component-tween": "^1.2.0",
     "dom-easy": "^1.1.1",
     "domify": "^1.4.0",
-    "mouse-wheel-event": "^1.2.0",
+    "mouse-wheel-event": "^1.2.3",
     "object-assign": "^4.1.0",
     "throttleit": "^1.0.0"
   },
@@ -95,6 +96,7 @@
     "raf": "component-raf",
     "events": "component-events",
     "query": "component-query",
-    "closest": "component-closest"
+    "closest": "component-closest",
+    "emitter": "component-emitter"
   }
 }

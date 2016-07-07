@@ -19,21 +19,16 @@ If you need to support IE8, you will need to include `es5shim` and `Promise poly
 
 ## Features
 
-* Click to navigate though images.
-* Support responsive image with url filter.
-* High performance animation for image popup and restore.
-* Friendly to SPA with unbind support.
-* Canvas loading spin and error check (auto retry).
-* Keyboard support (ESC, left, right, up, down).
-* Wheel event support for zoom in/out and navigate.
+* Click or horizon scroll to navigate though images.
+* Drag on the edge or vertical scroll or Safari(as least 9.1 on Mac) gesture to zoom in and out.
+* Show original image of original size with convertor function.
+* High performance animation.
+* Friendly to SPA with unbind and events support.
+* Keyboard support including ESC, left, right, up and down.
 * Draggable & scalable with mouse.
 * Support images with higher dimension than viewport.
+* Written in ES6, but still works on IE8.
 * No jQuery dependency, easy to use API.
-
-TODO:
-
-* support safari gesture events
-
 
 ## Usage
 
@@ -42,5 +37,9 @@ _Copy `src/images` and `src/style.css` to your project folder and include the cs
 ``` js
 var ImageBox = require('imagebox')
 var imgs = document.querySelectorAll('#demo img')
-new ImageBox(imgs)
+var box = new ImageBox(imgs)
+box.on('show', function() {
+})
+box.on('hide', function() {
+})
 ```

@@ -13,6 +13,7 @@ import * as util from './util'
 import spin from './spin'
 import Draggable from './dragable'
 import Resizable from './resizable'
+import Emitter from 'emitter'
 
 let overlay = domify(`
 <div class="imagebox-overlay">
@@ -33,8 +34,9 @@ let tmpl = `
 </div>
 `
 
-class ImageBox {
+class ImageBox extends Emitter {
   constructor(imgs, opts = {}) {
+    super()
     this.imgs = util.toArray(imgs)
     this.album = []
     let convertor = opts.convertor
@@ -57,6 +59,17 @@ class ImageBox {
     this.events.bind('click .imagebox-next', 'next')
     this.events.bind('mouseup .imagebox-container', 'containerClick')
     this.events.bind('click .imagebox-close', 'cancel')
+    this.events.bind('gesturestart')
+    this.events.bind('gesturechange')
+  }
+  ongesturestart(e) {
+    if (!classes(overlay).has('active') || this.animating) return
+    e.preventDefault()
+  }
+  ongesturechange(e) {
+    if (!classes(overlay).has('active') || this.animating) return
+    e.preventDefault()
+    this.scale(e.scale, {x: e.clientX, y: e.clientY})
   }
   /**
    * Keyup event handler
@@ -74,8 +87,8 @@ class ImageBox {
     if (code == 27) return this.cancel()
     if (code == 37) return this.prev()
     if (code == 39) return this.next()
-    if (code == 38) return this.scale(1)
-    if (code == 40) return this.scale(-1)
+    if (code == 38) return this.scale(1.25)
+    if (code == 40) return this.scale(0.8)
   }
   /**
    * Image click handler
@@ -96,13 +109,18 @@ class ImageBox {
    * @param {number} dx
    * @param {number} dy
    */
-  onwheel(dx, dy) {
+  onwheel(dx, dy, dz, e) {
     if (this.animating) return
     if (Math.abs(dx) > Math.abs(dy)) {
+      if(this.timeStamp && util.now() - this.timeStamp < 500) {
+        this.timeStamp = util.now()
+        return
+      }
       dx < 0 ? this.prev() : this.next()
+      this.timeStamp = util.now()
     } else {
-      if (Math.abs(dy) < 5) return
-      dy < 0 ? this.scale(-1) : this.scale(1)
+      let h = this.container.clientHeight
+      this.scale(1 + dy/h, {x: e.clientX, y: e.clientY})
     }
   }
   /**
@@ -143,7 +161,7 @@ class ImageBox {
     this.dragable = new Draggable(this.container)
     this.resizable = new Resizable(this.container)
     overlay.appendChild(this.container)
-    let onwheel = throttle(this.onwheel.bind(this), 1000)
+    let onwheel = throttle(this.onwheel.bind(this), 100)
     this._wheelUnbind = wheel(this.container, onwheel, true)
     overlay.style.display = 'block'
     setTimeout(function () {
@@ -165,6 +183,7 @@ class ImageBox {
     this.positionContainer({w: w, h: h}).then(function () {
       this.showImg(img)
     }.bind(this))
+    this.emit('show', img)
   }
   positionContainer({w, h, top, left}, duration = 200) {
     let dest = getDestination({w: w, h: h})
@@ -245,9 +264,11 @@ class ImageBox {
     this.dragable = null
     this.resizable = null
     this.container = null
+    let self = this
     setTimeout(function () {
       _(overlay).remove()
       _(el).remove()
+      self.emit('hide')
     }, 250)
   }
   /**
@@ -352,18 +373,19 @@ class ImageBox {
     }
     this.positionContainer(dest)
   }
-  scale(dir) {
+  scale(ratio, {x, y} = {}) {
     let el = this.container
     if (this.animating || !el) return
     let rect = el.getBoundingClientRect()
     let w = rect.width || el.clientWidth
     let h = rect.height || el.clientHeight
-    let ratio = dir > 0 ? 1.25 : 0.8
+    x = x || rect.left + w/2
+    y = y || rect.top + h/2
     let dest = {
       w: w*ratio,
       h: h*ratio,
-      left: rect.left - (w*ratio - w)/2,
-      top: rect.top - (h*ratio - h)/2
+      left: rect.left - (w*ratio - w)*(x - rect.left)/w,
+      top: rect.top - (h*ratio - h)*(y - rect.top)/h
     }
     this.positionContainer(dest, 100)
   }
