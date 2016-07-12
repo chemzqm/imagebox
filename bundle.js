@@ -46,17 +46,12 @@
 
 	'use strict';
 	
-	var _index = __webpack_require__(1);
-	
-	var _index2 = _interopRequireDefault(_index);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
+	var ImageBox = __webpack_require__(1);
 	__webpack_require__(29);
 	__webpack_require__(33);
 	
 	var imgs = document.querySelectorAll('#demo img');
-	var box = new _index2['default'](imgs, {
+	var box = new ImageBox(imgs, {
 	  convertor: function convertor(src) {
 	    return src.replace(/-\w+$/, '');
 	  }
@@ -631,6 +626,7 @@
 	}
 	
 	exports['default'] = ImageBox;
+	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
@@ -2600,6 +2596,8 @@
 	    b: parseInt(result[3], 16)
 	  } : null;
 	}
+	
+	module.exports = exports['default'];
 
 /***/ },
 /* 25 */
@@ -2706,6 +2704,7 @@
 	}();
 	
 	exports['default'] = Dragable;
+	module.exports = exports['default'];
 
 /***/ },
 /* 27 */
@@ -2815,6 +2814,7 @@
 	}();
 	
 	exports['default'] = Resizable;
+	module.exports = exports['default'];
 
 /***/ },
 /* 28 */
