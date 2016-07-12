@@ -297,8 +297,6 @@ class ImageBox extends Emitter {
       e.preventDefault()
       return false
     }
-    image.height = '100%'
-    image.width = '100%'
     image.src = obj.url
     container.appendChild(image)
     container.style.display = 'block'
