@@ -14,9 +14,6 @@ test-coveralls:
 	@node_modules/.bin/karma start --single-run && \
 		cat ./coverage/lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
-prepublish:
-	@babel src -d dest
-
 doc:
 	@cp backgroundsize.min.htc example
 	@ghp-import example -n -p
