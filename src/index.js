@@ -373,8 +373,7 @@ class ImageBox extends Emitter {
     if (!img) return
     let rect = img.getBoundingClientRect()
     if (rect.left == 0 && rect.top == 0) return
-    if (rect.left < 0 || rect.top < 0) return
-    //if (rect.bottom < 0 || rect.top > util.viewHeight()) return
+    if (rect.top + img.clientHeight < 0 || rect.top > util.viewHeight()) return
     let dest = {
       w: img.clientWidth,
       h: img.clientHeight,
