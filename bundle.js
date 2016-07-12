@@ -145,9 +145,6 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var overlay = (0, _domify2['default'])('\n<div class="imagebox-overlay">\n</div>\n');
-	overlay.style.display = 'none';
-	
 	var tmpl = '\n<div class="imagebox-container">\n  <div class="imagebox-prev"></div>\n  <div class="imagebox-next"></div>\n  <div class="imagebox-info"></div>\n  <div class="imagebox-close"></div>\n  <div class="resize-handle-n"></div>\n  <div class="resize-handle-s"></div>\n  <div class="resize-handle-e"></div>\n  <div class="resize-handle-w"></div>\n</div>\n';
 	
 	var ImageBox = function (_Emitter) {
@@ -160,6 +157,8 @@
 	
 	    var _this = _possibleConstructorReturn(this, _Emitter.call(this));
 	
+	    var overlay = _this.overlay = (0, _domify2['default'])('\n      <div class="imagebox-overlay">\n      </div>\n    ');
+	    overlay.style.display = 'none';
 	    _this.imgs = util.toArray(imgs);
 	    _this.album = [];
 	    var convertor = opts.convertor;
@@ -172,12 +171,11 @@
 	      });
 	    }
 	    _this._onclick = _this.onclick.bind(_this);
-	    _this._overlayClick = _this.overlayClick.bind(_this);
 	    _this._onkeyup = _this.onkeyup.bind(_this);
 	    _event2['default'].bind(document, 'click', _this._onclick);
 	    _event2['default'].bind(document, 'keyup', _this._onkeyup);
-	    _event2['default'].bind(overlay, 'click', _this._overlayClick);
 	    _this.events = (0, _events2['default'])(overlay, _this);
+	    _this.events.bind('click', 'overlayClick');
 	    _this.events.bind('click .imagebox-prev', 'prev');
 	    _this.events.bind('click .imagebox-next', 'next');
 	    _this.events.bind('mouseup .imagebox-container', 'containerClick');
@@ -188,12 +186,12 @@
 	  }
 	
 	  ImageBox.prototype.ongesturestart = function ongesturestart(e) {
-	    if (!(0, _classes2['default'])(overlay).has('active')) return;
+	    if (!(0, _classes2['default'])(this.overlay).has('active')) return;
 	    e.preventDefault ? e.preventDefault() : e.returnValue = false;
 	  };
 	
 	  ImageBox.prototype.ongesturechange = function ongesturechange(e) {
-	    if (!(0, _classes2['default'])(overlay).has('active')) return;
+	    if (!(0, _classes2['default'])(this.overlay).has('active')) return;
 	    e.preventDefault ? e.preventDefault() : e.returnValue = false;
 	    this.scale(e.scale, { x: e.clientX, y: e.clientY });
 	  };
@@ -207,7 +205,7 @@
 	
 	  ImageBox.prototype.onkeyup = function onkeyup(e) {
 	    if (e.defaultPrevented) return;
-	    if (!(0, _classes2['default'])(overlay).has('active')) return;
+	    if (!(0, _classes2['default'])(this.overlay).has('active')) return;
 	    var code = e.which || e.keyCode || e.charCode;
 	    if (code != 27 && (code < 37 || code > 40)) return;
 	    e.preventDefault ? e.preventDefault() : e.returnValue = false;
@@ -266,7 +264,7 @@
 	  ImageBox.prototype.overlayClick = function overlayClick(e) {
 	    var _target = e.target || e.srcElement;
 	
-	    if (_target !== overlay) return;
+	    if (_target !== this.overlay) return;
 	    this.cancel();
 	  };
 	  /**
@@ -298,6 +296,7 @@
 	
 	
 	  ImageBox.prototype.initContainer = function initContainer(img) {
+	    var overlay = this.overlay;
 	    document.body.appendChild(overlay);
 	    this.container = (0, _domify2['default'])(tmpl);
 	    this.dragable = new _dragable2['default'](this.container);
@@ -382,7 +381,7 @@
 	
 	
 	  ImageBox.prototype.prev = function prev() {
-	    if (this.animating || !(0, _classes2['default'])(overlay).has('active')) return;
+	    if (this.animating || !(0, _classes2['default'])(this.overlay).has('active')) return;
 	    var img = this.imgs[this.current - 1];
 	    if (img) this.showImg(img);
 	  };
@@ -394,7 +393,7 @@
 	
 	
 	  ImageBox.prototype.next = function next() {
-	    if (this.animating || !(0, _classes2['default'])(overlay).has('active')) return;
+	    if (this.animating || !(0, _classes2['default'])(this.overlay).has('active')) return;
 	    var img = this.imgs[this.current + 1];
 	    if (img) this.showImg(img);
 	  };
@@ -406,6 +405,7 @@
 	
 	
 	  ImageBox.prototype.cancel = function cancel() {
+	    var overlay = this.overlay;
 	    if (!(0, _classes2['default'])(overlay).has('active')) return;
 	    (0, _classes2['default'])(overlay).remove('active');
 	    var el = this.container;
@@ -531,8 +531,7 @@
 	    if (!img) return;
 	    var rect = img.getBoundingClientRect();
 	    if (rect.left == 0 && rect.top == 0) return;
-	    if (rect.left < 0 || rect.top < 0) return;
-	    //if (rect.bottom < 0 || rect.top > util.viewHeight()) return
+	    if (rect.top + img.clientHeight < 0 || rect.top > util.viewHeight()) return;
 	    var dest = {
 	      w: img.clientWidth,
 	      h: img.clientHeight,
@@ -562,7 +561,7 @@
 	      top: rect.top - (h * ratio - h) * (y - rect.top) / h
 	    };
 	    var cur = this.album[this.current];
-	    if (dest.w < 200) return;
+	    if (dest.w < 20) return;
 	    if (dest.w > cur.width * 2) return;
 	    this.positionContainer(dest, 100);
 	  };
@@ -576,12 +575,11 @@
 	  ImageBox.prototype.unbind = function unbind() {
 	    if (this.dragable) this.dragable.unbind();
 	    if (this.resizable) this.resizable.unbind();
-	    _event2['default'].unbind(document.body, 'click', this._onclick);
 	    _event2['default'].unbind(document, 'keyup', this._onkeyup);
-	    _event2['default'].unbind(overlay, 'click', this._overlayClick);
 	    var el = this.container;
 	    if (el && el.removeEventListener) el.removeEventListener('wheel', this._wheelHandler);
 	    this.events.unbind();
+	    (0, _dom2['default'])(this.overlay).remove();
 	  };
 	
 	  return ImageBox;
