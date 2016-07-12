@@ -15,12 +15,6 @@ import Draggable from './dragable'
 import Resizable from './resizable'
 import Emitter from 'emitter'
 
-let overlay = domify(`
-<div class="imagebox-overlay">
-</div>
-`)
-overlay.style.display = 'none'
-
 let tmpl = `
 <div class="imagebox-container">
   <div class="imagebox-prev"></div>
@@ -37,6 +31,11 @@ let tmpl = `
 class ImageBox extends Emitter {
   constructor(imgs, opts = {}) {
     super()
+    let overlay = this.overlay = domify(`
+      <div class="imagebox-overlay">
+      </div>
+    `)
+    overlay.style.display = 'none'
     this.imgs = util.toArray(imgs)
     this.album = []
     let convertor = opts.convertor
@@ -49,12 +48,11 @@ class ImageBox extends Emitter {
       })
     }
     this._onclick = this.onclick.bind(this)
-    this._overlayClick = this.overlayClick.bind(this)
     this._onkeyup = this.onkeyup.bind(this)
     event.bind(document, 'click', this._onclick)
     event.bind(document, 'keyup', this._onkeyup)
-    event.bind(overlay, 'click', this._overlayClick)
     this.events = events(overlay, this)
+    this.events.bind('click', 'overlayClick')
     this.events.bind('click .imagebox-prev', 'prev')
     this.events.bind('click .imagebox-next', 'next')
     this.events.bind('mouseup .imagebox-container', 'containerClick')
@@ -63,11 +61,11 @@ class ImageBox extends Emitter {
     this.events.bind('gesturechange')
   }
   ongesturestart(e) {
-    if (!classes(overlay).has('active')) return
+    if (!classes(this.overlay).has('active')) return
     e.preventDefault()
   }
   ongesturechange(e) {
-    if (!classes(overlay).has('active')) return
+    if (!classes(this.overlay).has('active')) return
     e.preventDefault()
     this.scale(e.scale, {x: e.clientX, y: e.clientY})
   }
@@ -79,7 +77,7 @@ class ImageBox extends Emitter {
    */
   onkeyup(e) {
     if (e.defaultPrevented) return
-    if (!classes(overlay).has('active')) return
+    if (!classes(this.overlay).has('active')) return
     let code = e.which || e.keyCode || e.charCode
     if (code != 27 && (code < 37 || code > 40)) return
     e.preventDefault()
@@ -128,7 +126,7 @@ class ImageBox extends Emitter {
    * @param  {Event}  e
    */
   overlayClick(e) {
-    if (e.target !== overlay) return
+    if (e.target !== this.overlay) return
     this.cancel()
   }
   /**
@@ -154,6 +152,7 @@ class ImageBox extends Emitter {
    * @param {Element} img image element to show
    */
   initContainer(img) {
+    let overlay = this.overlay
     document.body.appendChild(overlay)
     this.container = domify(tmpl)
     this.dragable = new Draggable(this.container)
@@ -232,7 +231,7 @@ class ImageBox extends Emitter {
    * @public
    */
   prev() {
-    if (this.animating || !classes(overlay).has('active')) return
+    if (this.animating || !classes(this.overlay).has('active')) return
     var img = this.imgs[this.current - 1]
     if (img) this.showImg(img)
   }
@@ -242,7 +241,7 @@ class ImageBox extends Emitter {
    * @public
    */
   next() {
-    if (this.animating || !classes(overlay).has('active')) return
+    if (this.animating || !classes(this.overlay).has('active')) return
     var img = this.imgs[this.current + 1]
     if (img) this.showImg(img)
   }
@@ -252,6 +251,7 @@ class ImageBox extends Emitter {
    * @public
    */
   cancel() {
+    let overlay = this.overlay
     if (!classes(overlay).has('active')) return
     classes(overlay).remove('active')
     let el = this.container
@@ -410,9 +410,7 @@ class ImageBox extends Emitter {
   unbind() {
     if (this.dragable) this.dragable.unbind()
     if (this.resizable) this.resizable.unbind()
-    event.unbind(document.body, 'click', this._onclick)
     event.unbind(document, 'keyup', this._onkeyup)
-    event.unbind(overlay, 'click', this._overlayClick)
     let el = this.container
     if (el && el.removeEventListener) el.removeEventListener('wheel', this._wheelHandler)
     this.events.unbind()
