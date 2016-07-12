@@ -414,6 +414,7 @@ class ImageBox extends Emitter {
     let el = this.container
     if (el && el.removeEventListener) el.removeEventListener('wheel', this._wheelHandler)
     this.events.unbind()
+    _(this.overlay).remove()
   }
 }
 
