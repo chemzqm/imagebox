@@ -1,4 +1,4 @@
-import ImageBox from '../src/index'
+var ImageBox = require('../src/index')
 require('./style.css')
 require('../src/style.css')
 

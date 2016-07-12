@@ -23,15 +23,11 @@
   "bugs": {
     "url": "https://github.com/chemzqm/iamgebox/issues"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
-  },
   "homepage": "https://github.com/chemzqm/iamgebox#readme",
   "devDependencies": {
     "babel-core": "^6.7.7",
     "babel-loader": "^6.2.4",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-es3-member-expression-literals": "^6.8.0",
     "babel-plugin-transform-es3-property-literals": "^6.8.0",
     "babel-plugin-transform-event": "0.0.4",
