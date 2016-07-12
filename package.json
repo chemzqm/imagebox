@@ -36,7 +36,6 @@
     "babel-preset-es2015-loose": "^7.0.0",
     "coveralls": "^2.11.4",
     "css-loader": "^0.23.0",
-    "es3ify-loader": "^0.2.0",
     "file-loader": "^0.8.5",
     "growl": "^1.8.1",
     "gulp": "^3.9.0",
