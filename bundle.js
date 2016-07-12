@@ -453,8 +453,6 @@
 	      e.preventDefault ? e.preventDefault() : e.returnValue = false;
 	      return false;
 	    };
-	    image.height = '100%';
-	    image.width = '100%';
 	    image.src = obj.url;
 	    container.appendChild(image);
 	    container.style.display = 'block';
@@ -532,6 +530,8 @@
 	    var img = this.imgs[this.current];
 	    if (!img) return;
 	    var rect = img.getBoundingClientRect();
+	    if (rect.left == 0 && rect.top == 0) return;
+	    if (rect.left < 0 || rect.top < 0) return;
 	    //if (rect.bottom < 0 || rect.top > util.viewHeight()) return
 	    var dest = {
 	      w: img.clientWidth,
