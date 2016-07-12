@@ -398,7 +398,7 @@ class ImageBox extends Emitter {
       top: rect.top - (h*ratio - h)*(y - rect.top)/h
     }
     let cur = this.album[this.current]
-    if (dest.w < 200) return
+    if (dest.w < 20) return
     if (dest.w > cur.width*2) return
     this.positionContainer(dest, 100)
   }
