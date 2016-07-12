@@ -246,11 +246,9 @@
 	  ImageBox.prototype.onwheel = function onwheel(dx, dy, dz, e) {
 	    if (this.animating) return;
 	    if (Math.abs(dx) > Math.abs(dy)) {
-	      if (this.timeStamp && util.now() - this.timeStamp < 500) {
-	        this.timeStamp = util.now();
-	        return;
+	      if (!this.timeStamp || util.now() - this.timeStamp > 500) {
+	        dx < 0 ? this.prev() : this.next();
 	      }
-	      dx < 0 ? this.prev() : this.next();
 	      this.timeStamp = util.now();
 	    } else {
 	      var h = this.container.clientHeight;
@@ -377,7 +375,7 @@
 	    return promise;
 	  };
 	  /**
-	   * show next image
+	   * show previous image
 	   *
 	   * @public
 	   */
@@ -389,7 +387,7 @@
 	    if (img) this.showImg(img);
 	  };
 	  /**
-	   * show previous image
+	   * show next image
 	   *
 	   * @public
 	   */
