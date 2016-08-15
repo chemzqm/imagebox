@@ -97,7 +97,7 @@ class ImageBox extends Emitter {
   onclick(e) {
     if (e.target.tagName.toLowerCase() == 'img') {
       let i = this.imgs.indexOf(e.target) 
-      if (i !== -1) this.initContainer(e.target)
+      if (i !== -1) this.show(e.target)
     }
   }
   /**
@@ -146,12 +146,12 @@ class ImageBox extends Emitter {
     }
   }
   /**
-   * Prepare container with img as shown image
+   * show img
    *
-   * @private
+   * @public
    * @param {Element} img image element to show
    */
-  initContainer(img) {
+  show(img) {
     let overlay = this.overlay
     document.body.appendChild(overlay)
     this.container = domify(tmpl)
