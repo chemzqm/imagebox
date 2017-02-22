@@ -4,14 +4,16 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
   transition: background-color 0.25s linear;
   z-index: 99;
   display: none;
 }
+
 .imagebox-overlay.active {
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0, 0, 0, 0.8);
 }
+
 .imagebox-container {
   will-change: left, top;
   position: fixed;
@@ -20,13 +22,14 @@
   user-select: none;
   -webkit-user-select: none;
   cursor: -webkit-grab;
-  box-shadow: 0 1px 7px rgba(0,0,0,0.6);
+  box-shadow: 0 1px 7px rgba(0, 0, 0, 0.6);
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 4px;
   -ms-behavior: url(/backgroundsize.min.htc);
 }
+
 .imagebox-info {
   position: absolute;
   bottom: -25px;
@@ -37,14 +40,17 @@
   font-size: 16px;
   color: #fff;
 }
+
 .imagebox-container:hover .imagebox-prev,
 .imagebox-container:hover .imagebox-next {
-  opacity: 0.3
+  opacity: 0.3;
 }
+
 .imagebox-container .imagebox-prev:hover,
 .imagebox-container .imagebox-next:hover {
   opacity: 1 !important;
 }
+
 .imagebox-prev,
 .imagebox-next {
   position: absolute;
@@ -57,17 +63,20 @@
   z-index: 2;
   transition: opacity 0.2s linear;
 }
+
 .imagebox-prev {
   left: 10px;
   background-image: url('./images/prev.png');
 }
+
 .imagebox-next {
   right: 10px;
   background-image: url('./images/next.png');
 }
+
 .imagebox-close {
   position: absolute;
-  right: 0px;
+  right: 0;
   bottom: -23px;
   cursor: pointer;
   width: 18px;
@@ -77,6 +86,7 @@
   background-image: url('./images/close.png');
   -ms-behavior: url(/backgroundsize.min.htc);
 }
+
 .imagebox-container img {
   border-radius: 4px;
   width: 100%;
@@ -86,8 +96,8 @@
   -webkit-user-select: none;
   -webkit-user-drag: none;
 }
+
 .imagebox-mask {
-  /*background-color: rgba(0,0,0,0.4);*/
   z-index: 9999;
   position: absolute;
   left: 0;
@@ -95,7 +105,8 @@
   top: 0;
   bottom: 0;
 }
-.imagebox-mask .spin{
+
+.imagebox-mask .spin {
   width: 32px;
   height: 32px;
   position: absolute;
@@ -104,6 +115,7 @@
   margin-top: -16px;
   margin-left: -16px;
 }
+
 .resize-handle-n,
 .resize-handle-s,
 .resize-handle-e,
@@ -116,28 +128,29 @@
   filter: alpha(opacity=0);
   opacity: 0;
 }
+
 .resize-handle-n {
-	width: 100%;
+  width: 100%;
   left: 0;
   top: 0;
-	cursor: ns-resize;
+  cursor: ns-resize;
 }
 
 .resize-handle-s {
-	left: 0;
-	bottom: 0;
-	width: 100%;
-	cursor: ns-resize;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  cursor: ns-resize;
 }
 
 .resize-handle-e {
-	right: 0;
-	height: 100%;
-	cursor: ew-resize;
+  right: 0;
+  height: 100%;
+  cursor: ew-resize;
 }
 
 .resize-handle-w {
-	left: 0;
-	height: 100%;
-	cursor: ew-resize;
+  left: 0;
+  height: 100%;
+  cursor: ew-resize;
 }

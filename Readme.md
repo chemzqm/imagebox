@@ -1,5 +1,7 @@
 # Imagebox
 
+TODO: min width for mask
+
 View gallary of images on desktop. (without jquery)
 
 Tested on IE8 Chrome Firefox and Safari.
